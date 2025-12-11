@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: n8n
+    env: docker
+    region: frankfurt
+    plan: free
+    branch: main
+    numInstances: 1
+    healthCheckPath: /healthz
+    envVars:
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8nDB
+          property: host
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8nDB
+          property: database
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8nDB
+          property: port
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8nDB
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8nDB
+          property: password
+
+      # Render force l'utilisation du port interne
+      - key: PORT
+        value: $PORT
+
+      # URLs (tu mettras la vraie URL après la création du service)
+      - key: N8N_HOST
+        value: your-render-subdomain.onrender.com
+      - key: N8N_PROTOCOL
+        value: https
+      - key: WEBHOOK_URL
+        value: https://your-render-subdomain.onrender.com/
+
+      # Localisation
+      - key: GENERIC_TIMEZONE
+        value: Europe/Paris
+      - key: TZ
+        value: Europe/Paris
+      - key: N8N_DEFAULT_LOCALE
+        value: fr
+
+      - key: N8N_LOG_LEVEL
+        value: info
+
+      # Clé de chiffrement automatique
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+
+      # Optionnel mais propre
+      - key: EXECUTIONS_PROCESS
+        value: main
+
+databases:
+  - name: n8nDB
+    region: frankfurt
+    plan: free
