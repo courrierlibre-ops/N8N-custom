@@ -5,19 +5,20 @@ USER root
 ADD https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz /tmp/ffmpeg.tar.xz
 
 RUN set -eux; \
-  apt-get update; \
-  apt-get install -y --no-install-recommends xz-utils ca-certificates; \
-  rm -rf /var/lib/apt/lists/*; \
+  apk add --no-cache ca-certificates xz tar; \
   cd /tmp; \
   tar -xf ffmpeg.tar.xz; \
-  cp ffmpeg-*/ffmpeg /usr/local/bin/ffmpeg; \
-  cp ffmpeg-*/ffprobe /usr/local/bin/ffprobe; \
+  ffdir="$(find /tmp -maxdepth 1 -type d -name 'ffmpeg-*' | head -n 1)"; \
+  test -n "$ffdir"; \
+  cp "$ffdir/ffmpeg" /usr/local/bin/ffmpeg; \
+  cp "$ffdir/ffprobe" /usr/local/bin/ffprobe; \
   chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe; \
-  ffmpeg -version; \
-  ffprobe -version; \
-  rm -rf /tmp/ffmpeg*
+  /usr/local/bin/ffmpeg -version; \
+  /usr/local/bin/ffprobe -version; \
+  rm -rf /tmp/ffmpeg* "$ffdir"
 
 USER node
+
 
 
 
